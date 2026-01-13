@@ -1,44 +1,83 @@
-# HideHelmet
+# HideHelmet / HideArmor v1.0.0
 
-Self-only armor visibility toggles for Hytale servers. Each player can hide or show their own armor pieces without affecting inventory or what other players see.
+Self-only armor visibility toggles for Hytale servers.  
+Lets each player hide or show their **own armor pieces only in their own view**, without changing inventory, stats, or what other players see.
 
-Features
-- Self-only visuals (no inventory changes, no impact on other players).
-- Per-slot toggles: Head, Chest, Hands, Legs.
-- Global toggle for all armor slots.
-- Persistent state per player (saved to disk).
+---
 
-Commands
-- /hidehelmet
-  - Toggle head slot only.
-  - Output: `HideHelmet: ON` or `HideHelmet: OFF`.
-- /hidearmor
-  - No args: show help + current status.
-  - `status`: show current hidden slots.
-  - `head|chest|hands|legs`: toggle a single slot.
-  - `on head|chest|hands|legs`: force slot hidden.
-  - `off head|chest|hands|legs`: force slot visible.
-  - `all`: toggle all slots (hide all if any are visible; show all if all are hidden).
-  - `on all`: hide all slots.
-  - `off all`: show all slots.
-  - Output examples:
-    - `Hidden: Chest, Hands, Legs`
-    - `HideArmor: Head, Legs`
+## What it does
 
-Behavior and safety
-- Self-only: only the player running the command sees their armor hidden.
-- No permission checks by default (open access).
-- Only equipment visuals are modified; inventory and hands are untouched.
+- Masks outgoing `EntityUpdates → Equipment.armorIds` **for the local player only**.
+- Does **not** modify inventory, durability, stats, or actual equipped items.
+- Does **not** affect how other players see you.
 
-Persistence
-- Saved to `players.json` in the plugin data directory.
+---
+
+## Supported slots
+
+- Head (helmet)
+- Chest
+- Hands
+- Legs
+
+> **Note:** `Hands` refers to the arms/gauntlets armor slot — **not** right/left hand tools.
+
+---
+
+## Commands
+
+### `/hidehelmet`
+Toggle **Head** slot only.
+
+Output:
+- `HideHelmet: ON`
+- `HideHelmet: OFF`
+
+### `/hidearmor`
+| Usage | Description |
+|-------|-------------|
+| `/hidearmor` | Show help + current status |
+| `/hidearmor status` | Show hidden slots |
+| `/hidearmor <slot>` | Toggle slot (`head`, `chest`, `hands`, `legs`) |
+| `/hidearmor on <slot>` | Force hide slot |
+| `/hidearmor off <slot>` | Force show slot |
+| `/hidearmor all` | Toggle all slots |
+| `/hidearmor on all` | Hide all slots |
+| `/hidearmor off all` | Show all slots |
+
+**Examples:**
+```
+Hidden: Chest, Hands, Legs
+HideArmor: Head, Legs
+```
+
+---
+
+## Persistence
+
+- Saves per-player state to `players.json` in the plugin data directory.
+- Restores state on server restart.
 - Debounced saves to reduce disk writes.
-- State is restored on server restart.
 
-Deploy / install
-1) Build the plugin jar.
-2) Drop the jar into your server's mods/plugins folder.
-3) Start the server to generate `players.json`.
+---
 
-Notes
-- This mod is designed for player-side visuals only.
+## Permissions / OP
+
+- By default, **no permission checks** are enforced (any player can use it).
+- If your server requires OP/admin-only usage, restrict commands via your server's permission system.
+
+---
+
+## Install
+
+1. Download the `.jar` from the **Assets** section below.
+2. Drop it into your server's plugins/mods folder.
+3. Restart the server.  
+   A `players.json` file will be created after the first save.
+
+---
+
+## Notes / Limitations
+
+- **Self-only by design**: this is a client-view convenience feature, **not** a disguise or cosmetic system.
+- Only armor visuals are modified; tools in hands are untouched.
