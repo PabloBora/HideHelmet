@@ -3,42 +3,41 @@ package dev.smugtox.hidehelmet.commands;
 import com.hypixel.hytale.server.core.Message;
 import com.hypixel.hytale.server.core.command.system.CommandContext;
 import com.hypixel.hytale.server.core.command.system.basecommands.CommandBase;
+import com.hypixel.hytale.server.core.entity.entities.Player;
+import dev.smugtox.hidehelmet.HideArmorState;
 
 import javax.annotation.Nonnull;
-import java.util.Set;
 
 public class HideHelmetCommand extends CommandBase {
 
-    private final Set<Object> enabledPlayers;
-    private final ToggleCallback callback;
-
-    public interface ToggleCallback {
-        void onToggle(@Nonnull CommandContext ctx, boolean enabled);
-    }
-
-    public HideHelmetCommand(String name, String description, Set<Object> enabledPlayers, ToggleCallback callback) {
+    public HideHelmetCommand(String name, String description) {
         super(name, description);
-        this.enabledPlayers = enabledPlayers;
-        this.callback = callback;
     }
 
     @Override
     protected void executeSync(@Nonnull CommandContext context) {
-        var player = context.senderAsPlayer();
-        Object ref = player.getReference();
 
-        boolean enabled;
-        if (enabledPlayers.contains(ref)) {
-            enabledPlayers.remove(ref);
-            enabled = false;
-        } else {
-            enabledPlayers.add(ref);
-            enabled = true;
+        var sender = context.sender();
+        if (!(sender instanceof Player player)) {
+            return;
         }
 
-        // Feedback como en el template (Message.raw + sendMessage)
+        HideArmorState.toggleSlot(player.getUuid(), HideArmorState.SLOT_HEAD);
+        boolean enabled = HideArmorState.isHidden(player.getUuid(), HideArmorState.SLOT_HEAD);
         player.sendMessage(Message.raw(enabled ? "HideHelmet: ON" : "HideHelmet: OFF"));
 
-        if (callback != null) callback.onToggle(context, enabled);
+        forceRefresh(player);
+    }
+
+    private void forceRefresh(Player player) {
+        var world = player.getWorld();
+        if (world == null) return;
+
+        world.execute(() -> {
+            try {
+                player.invalidateEquipmentNetwork();
+            } catch (Throwable ignored) {
+            }
+        });
     }
 }
