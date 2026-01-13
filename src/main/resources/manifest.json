@@ -1,19 +1,15 @@
 {
-  "Group": "dev.hytalemodding",
-  "Name": "ExamplePlugin",
-  "Version": "1.0.0",
-  "Description": "Description of your plugin",
+  "Group": "dev.smugtox",
+  "Name": "HideHelmet",
+  "Version": "0.1.0",
+  "Description": "Toggle to hide helmet visuals while keeping armor stats.",
   "Authors": [
-    {
-      "Name": "Your Name",
-      "Email": "your.email@example.com",
-      "Url": "https://your-website.com"
-    }
+    { "Name": "smugtox", "Email": "", "Url": "" }
   ],
-  "Website": "https://your-plugin-website.com",
+  "Website": "",
   "ServerVersion": "*",
   "Dependencies": {},
   "OptionalDependencies": {},
   "DisabledByDefault": false,
-  "Main": "dev.hytalemodding.ExamplePlugin"
+  "Main": "dev.smugtox.hidehelmet.HideHelmetPlugin"
 }
