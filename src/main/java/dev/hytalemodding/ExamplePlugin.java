@@ -19,14 +19,4 @@ public class ExamplePlugin extends JavaPlugin {
         this.getCommandRegistry().registerCommand(new ExampleCommand("example", "An example command"));
         this.getEventRegistry().registerGlobal(PlayerReadyEvent.class, ExampleEvent::onPlayerReady);
     }
-
-    @Override
-    protected void start() {
-        super.start();
-    }
-
-    @Override
-    protected void shutdown() {
-        super.shutdown();
-    }
 }
