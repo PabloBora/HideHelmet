@@ -35,8 +35,8 @@ public class HideArmorCommand extends CommandBase {
         }
 
         if ("all".equals(first)) {
-            int current = HideArmorState.getMask(player.getUuid());
-            int newMask = HideArmorState.setAll(player.getUuid(), current != 15);
+            int current = HideArmorState.getMask(player.getPlayerRef().getUuid());
+            int newMask = HideArmorState.setAll(player.getPlayerRef().getUuid(), current != 15);
             player.sendMessage(Message.raw("HideArmor: " + HideArmorState.formatMask(newMask)));
             forceRefresh(player);
             return;
@@ -51,7 +51,7 @@ public class HideArmorCommand extends CommandBase {
             boolean enable = "on".equals(first);
             String target = args[1].toLowerCase();
             if ("all".equals(target)) {
-                int newMask = HideArmorState.setAll(player.getUuid(), enable);
+                int newMask = HideArmorState.setAll(player.getPlayerRef().getUuid(), enable);
                 player.sendMessage(Message.raw("HideArmor: " + HideArmorState.formatMask(newMask)));
                 forceRefresh(player);
                 return;
@@ -63,10 +63,10 @@ public class HideArmorCommand extends CommandBase {
                 return;
             }
 
-            int mask = HideArmorState.getMask(player.getUuid());
+            int mask = HideArmorState.getMask(player.getPlayerRef().getUuid());
             int bit = 1 << slot;
             int newMask = enable ? (mask | bit) : (mask & ~bit);
-            HideArmorState.setMask(player.getUuid(), newMask);
+            HideArmorState.setMask(player.getPlayerRef().getUuid(), newMask);
             player.sendMessage(Message.raw("HideArmor: " + HideArmorState.formatMask(newMask)));
             forceRefresh(player);
             return;
@@ -74,7 +74,7 @@ public class HideArmorCommand extends CommandBase {
 
         int slot = resolveSlot(first);
         if (slot >= 0) {
-            int newMask = HideArmorState.toggleSlot(player.getUuid(), slot);
+            int newMask = HideArmorState.toggleSlot(player.getPlayerRef().getUuid(), slot);
             player.sendMessage(Message.raw("HideArmor: " + HideArmorState.formatMask(newMask)));
             forceRefresh(player);
             return;
@@ -88,7 +88,7 @@ public class HideArmorCommand extends CommandBase {
     }
 
     private void sendStatus(Player player) {
-        int mask = HideArmorState.getMask(player.getUuid());
+        int mask = HideArmorState.getMask(player.getPlayerRef().getUuid());
         player.sendMessage(Message.raw("Hidden: " + HideArmorState.formatMask(mask)));
     }
 

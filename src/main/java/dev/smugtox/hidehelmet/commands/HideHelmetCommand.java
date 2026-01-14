@@ -22,8 +22,8 @@ public class HideHelmetCommand extends CommandBase {
             return;
         }
 
-        HideArmorState.toggleSlot(player.getUuid(), HideArmorState.SLOT_HEAD);
-        boolean enabled = HideArmorState.isHidden(player.getUuid(), HideArmorState.SLOT_HEAD);
+        HideArmorState.toggleSlot(player.getPlayerRef().getUuid(), HideArmorState.SLOT_HEAD);
+        boolean enabled = HideArmorState.isHidden(player.getPlayerRef().getUuid(), HideArmorState.SLOT_HEAD);
         player.sendMessage(Message.raw(enabled ? "HideHelmet: ON" : "HideHelmet: OFF"));
 
         forceRefresh(player);
