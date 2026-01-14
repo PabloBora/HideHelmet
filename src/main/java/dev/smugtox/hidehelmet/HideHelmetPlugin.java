@@ -6,6 +6,7 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerReadyEvent;
 import com.hypixel.hytale.server.core.plugin.JavaPlugin;
 import com.hypixel.hytale.server.core.plugin.JavaPluginInit;
 import com.hypixel.hytale.server.core.entity.entities.Player;
+import com.hypixel.hytale.server.core.event.events.entity.LivingEntityInventoryChangeEvent;
 import com.hypixel.hytale.server.core.modules.entity.tracker.EntityTrackerSystems.EntityViewer;
 import dev.smugtox.hidehelmet.commands.HideArmorCommand;
 import dev.smugtox.hidehelmet.commands.HideHelmetCommand;
@@ -20,6 +21,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -37,6 +39,7 @@ public class HideHelmetPlugin extends JavaPlugin {
     private ScheduledExecutorService saveExecutor;
     private ScheduledFuture<?> pendingSave;
     private boolean dirty;
+    private final Map<UUID, Long> lastInvalidateByPlayer = new ConcurrentHashMap<>();
 
     public HideHelmetPlugin(@Nonnull JavaPluginInit init) {
         super(init);
@@ -95,6 +98,26 @@ public class HideHelmetPlugin extends JavaPlugin {
                 } catch (Throwable t) {
                     // Si algo cambia en el SDK, evitamos crashear el server
                 }
+            });
+        });
+
+        // Fallback: re-aplicar hide cuando cambie inventario (el cliente rehidrata armadura).
+        this.getEventRegistry().registerGlobal(LivingEntityInventoryChangeEvent.class, (event) -> {
+            if (!(event.getEntity() instanceof Player player)) return;
+            if (HideArmorState.getMask(player.getUuid()) == 0) return;
+
+            long now = System.currentTimeMillis();
+            Long last = lastInvalidateByPlayer.get(player.getUuid());
+            if (last != null && (now - last) < 300) return;
+            lastInvalidateByPlayer.put(player.getUuid(), now);
+
+            var world = player.getWorld();
+            if (world == null) return;
+
+            world.execute(() -> {
+                try {
+                    player.invalidateEquipmentNetwork();
+                } catch (Throwable ignored) {}
             });
         });
     }

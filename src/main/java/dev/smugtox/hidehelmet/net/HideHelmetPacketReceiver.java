@@ -62,6 +62,8 @@ public final class HideHelmetPacketReceiver implements IPacketReceiver {
 
             if (upd.updates == null || upd.updates.length == 0) continue;
 
+            EntityUpdate updCopy = null;
+
             for (int j = 0; j < upd.updates.length; j++) {
                 ComponentUpdate cu = upd.updates[j];
                 if (cu == null) continue;
@@ -87,18 +89,20 @@ public final class HideHelmetPacketReceiver implements IPacketReceiver {
                     }
 
                     if (!shouldHide) continue;
-
                     // Copias "lazy": clonamos hasta que realmente vamos a cambiar algo
                     if (!modified) {
                         updatesCopy = eu.updates.clone(); // shallow
                         modified = true;
                     }
 
-                    // clonamos el EntityUpdate para no mutar el original
-                    EntityUpdate updCopy = new EntityUpdate();
-                    updCopy.networkId = upd.networkId;
-                    updCopy.removed = upd.removed; // no lo tocamos
-                    updCopy.updates = upd.updates.clone(); // shallow de ComponentUpdate
+                    if (updCopy == null) {
+                        // clonamos el EntityUpdate una sola vez para no mutar el original
+                        updCopy = new EntityUpdate();
+                        updCopy.networkId = upd.networkId;
+                        updCopy.removed = upd.removed; // no lo tocamos
+                        updCopy.updates = upd.updates.clone(); // shallow de ComponentUpdate
+                        updatesCopy[i] = updCopy;
+                    }
 
                     // clonamos el ComponentUpdate actual
                     ComponentUpdate cuCopy = new ComponentUpdate();
@@ -122,7 +126,6 @@ public final class HideHelmetPacketReceiver implements IPacketReceiver {
                     // reinsertamos el cuCopy en la lista
                     updCopy.updates[j] = cuCopy;
 
-                    updatesCopy[i] = updCopy;
                 }
             }
         }
