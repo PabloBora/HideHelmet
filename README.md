@@ -81,3 +81,5 @@ HideArmor: Head, Legs
 
 - **Self-only by design**: this is a client-view convenience feature, **not** a disguise or cosmetic system.
 - Only armor visuals are modified; tools in hands are untouched.
+- In cases during extreme rapid actions, armor may briefly reappear for a frame due to client-side rendering behavior.  
+  The mod automatically corrects this almost immediately.
